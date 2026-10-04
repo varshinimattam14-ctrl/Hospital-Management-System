@@ -1,0 +1,7 @@
+{% extends 'base.html' %}{% block content %}
+<div class="cards">
+{% for key,label,cls in [('PATIENT','Patients','cyan'),('DOCTOR','Doctors','blue'),('APPOINTMENT','Appointments','green'),('MEDICINE','Medicines','orange'),('ROOM','Rooms','blue'),('BILLING','Billing','cyan')] %}<div class="stat-card"><div class="stat-label">{{label}}</div><div class="stat-value">{{counts.get(key,0)}}</div><div class="stat-accent {{cls}}"></div></div>{% endfor %}
+</div>
+<div class="quick-row"><a href="{{url_for('patients')}}" class="primary">+ Add New Patient</a><a href="{{url_for('module',name='appointments')}}" class="secondary">View Appointments</a><a href="{{url_for('module',name='medical_records')}}" class="secondary">Medical Records</a></div>
+<section class="panel"><div class="panel-head"><div><h2>Recent Appointments</h2><p>Latest scheduled patient visits</p></div><a href="{{url_for('module',name='appointments')}}" class="link">View all →</a></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th></tr></thead><tbody>{% for a in appointments %}<tr><td>{{a.Appointment_ID}}</td><td>{{a.Patient or '—'}}</td><td>{{a.Doctor or '—'}}</td><td>{{a.Appointment_Date or '—'}}</td><td>{{a.Appointment_Time or '—'}}</td><td><span class="badge status-{{(a.Status or 'pending')|lower|replace(' ','-')}}">{{a.Status or 'Pending'}}</span></td></tr>{% else %}<tr><td colspan="6" class="empty">No appointments found.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ title or 'HMS' }} | Hospital Management System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">✚</div><div><b>HMS</b><span>Hospital Management</span></div></div>
+    <nav>
+      {% for item in modules %}
+        <a class="nav-item {% if name|default('') == item[1] or (item[1]=='dashboard' and request.endpoint=='dashboard') %}active{% endif %}" href="{{ url_for('dashboard') if item[1]=='dashboard' else url_for('patients') if item[1]=='patients' else url_for('module', name=item[1]) }}">
+          <span class="nav-icon">{{ item[2] }}</span>{{ item[0] }}
+        </a>
+      {% endfor %}
+    </nav>
+    <a class="nav-item logout" href="{{ url_for('logout') }}"><span class="nav-icon">↪</span>Logout</a>
+  </aside>
+  <main class="main-area">
+    <header class="topbar"><div><div class="eyebrow">HOSPITAL MANAGEMENT SYSTEM</div><h1>{{ title or 'Dashboard' }}</h1></div><div class="admin-chip"><span class="status-dot"></span> Admin</div></header>
+    {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flash-stack">{% for category,msg in messages %}<div class="flash {{ category }}">{{ msg }}</div>{% endfor %}</div>{% endif %}{% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+<script>
+function confirmDelete(form){ if(confirm('Are you sure you want to delete this record?')) form.submit(); }
+function clearSearch(){ window.location.href=window.location.pathname; }
+function calculateBill(){
+ const ids=['Consultation_Fee','Medicine_Charges','Laboratory_Charges','Room_Charges'];
+ let total=0; ids.forEach(id=>total += parseFloat(document.getElementById(id)?.value || 0));
+ const el=document.getElementById('Amount'); if(el) el.value=total.toFixed(2);
+}
+function openForm(data){
+ const modal=document.getElementById('formModal'); if(!modal)return;
+ modal.classList.add('show');
+ const form=document.getElementById('recordForm');
+ form.reset();
+ if(data){ Object.keys(data).forEach(k=>{const e=form.querySelector('[name="'+k+'"]'); if(e && data[k]!==null && data[k]!==undefined)e.value=data[k];}); }
+ if(form.dataset.name==='billing') calculateBill();
+}
+function closeForm(){const m=document.getElementById('formModal');if(m)m.classList.remove('show');}
+document.addEventListener('DOMContentLoaded',()=>{ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeForm();})); });
+</script>
+</body></html>
