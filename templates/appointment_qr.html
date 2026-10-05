@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Appointment QR Code</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #101820;
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            width: 500px;
+            margin: 50px auto;
+            background: #182633;
+            padding: 35px;
+            border-radius: 15px;
+        }
+
+        h1 {
+            color: white;
+        }
+
+        img {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            width: 280px;
+        }
+
+        .url {
+            margin-top: 20px;
+            padding: 12px;
+            background: #243746;
+            border-radius: 6px;
+            word-break: break-all;
+        }
+
+        .instruction {
+            color: #ccc;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Appointment Booking QR</h1>
+
+    <p class="instruction">
+        Scan this QR code to book a hospital appointment.
+    </p>
+
+    <img src="data:image/png;base64,{{ qr_image }}">
+
+    <div class="url">
+        {{ booking_url }}
+    </div>
+
+</div>
+
+</body>
+</html>

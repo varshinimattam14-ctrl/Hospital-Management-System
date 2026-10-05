@@ -1,5 +1,8 @@
 import os
 from decimal import Decimal
+import io
+import base64
+import qrcode
 from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import mysql.connector
@@ -318,7 +321,116 @@ def billing_total():
     try: total = sum(Decimal(v) for v in vals)
     except Exception: total = Decimal('0')
     return jsonify({'total': f'{total:.2f}'})
+@app.route('/book-appointment', methods=['GET', 'POST'])
+def book_appointment():
+    doctors = query("""
+        SELECT Doctor_ID, Name, Specialization
+        FROM doctor
+        ORDER BY Name
+    """)
 
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        phone = request.form.get('phone', '').strip()
+        doctor_id = request.form.get('doctor_id')
+        appointment_date = request.form.get('appointment_date')
+        appointment_time = request.form.get('appointment_time')
+
+        if not name or not phone or not doctor_id or not appointment_date or not appointment_time:
+            return render_template(
+                'book_appointment.html',
+                doctors=doctors,
+                error='Please fill all required fields.'
+            )
+
+        # Check whether patient already exists using phone number
+        patient = one(
+            "SELECT Patient_ID FROM patient WHERE Phone = %s LIMIT 1",
+            (phone,)
+        )
+
+        if patient:
+            patient_id = patient['Patient_ID']
+        else:
+            # Generate new Patient ID
+            last_patient = one(
+                "SELECT MAX(Patient_ID) AS max_id FROM patient"
+            )
+
+            patient_id = (last_patient['max_id'] or 300) + 1
+
+            query("""
+                INSERT INTO patient
+                (Patient_ID, Name, Phone)
+                VALUES (%s, %s, %s)
+            """, (patient_id, name, phone), fetch=False)
+
+        # Generate new Appointment ID
+        last_appointment = one(
+            "SELECT MAX(Appointment_ID) AS max_id FROM appointment"
+        )
+
+        appointment_id = (last_appointment['max_id'] or 0) + 1
+
+        query("""
+            INSERT INTO appointment
+            (Appointment_ID, Patient_ID, Doctor_ID,
+             Appointment_Date, Appointment_Time, Status)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (
+            appointment_id,
+            patient_id,
+            doctor_id,
+            appointment_date,
+            appointment_time,
+            'Booked'
+        ), fetch=False)
+
+        return render_template(
+            'booking_success.html',
+            appointment_id=appointment_id,
+            patient_id=patient_id,
+            name=name,
+            appointment_date=appointment_date,
+            appointment_time=appointment_time
+        )
+
+    return render_template(
+        'book_appointment.html',
+        doctors=doctors
+    )
+
+
+@app.route('/appointment-qr')
+def appointment_qr():
+    booking_url = url_for('book_appointment', _external=True)
+
+    qr = qrcode.QRCode(
+        version=1,
+        box_size=10,
+        border=4
+    )
+
+    qr.add_data(booking_url)
+    qr.make(fit=True)
+
+    img = qr.make_image(
+        fill_color="black",
+        back_color="white"
+    )
+
+    buffer = io.BytesIO()
+    img.save(buffer, format="PNG")
+
+    qr_image = base64.b64encode(
+        buffer.getvalue()
+    ).decode('utf-8')
+
+    return render_template(
+        'appointment_qr.html',
+        booking_url=booking_url,
+        qr_image=qr_image
+    )
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=int(os.getenv('PORT','5001')), debug=True)

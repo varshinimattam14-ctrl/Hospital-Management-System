@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Appointment Booked</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+
+        .success-box {
+            width: 500px;
+            margin: 80px auto;
+            background: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        h1 {
+            color: #27AE60;
+        }
+
+        .details {
+            text-align: left;
+            margin-top: 25px;
+            line-height: 2;
+        }
+
+        .home {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 25px;
+            background: #2E86C1;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="success-box">
+
+    <h1>✓ Appointment Booked</h1>
+
+    <p>Your appointment has been successfully booked.</p>
+
+    <div class="details">
+        <strong>Patient:</strong> {{ name }}<br>
+        <strong>Patient ID:</strong> {{ patient_id }}<br>
+        <strong>Appointment ID:</strong> {{ appointment_id }}<br>
+        <strong>Date:</strong> {{ appointment_date }}<br>
+        <strong>Time:</strong> {{ appointment_time }}
+    </div>
+
+    <a href="/book-appointment" class="home">
+        Book Another Appointment
+    </a>
+
+</div>
+
+</body>
+</html>

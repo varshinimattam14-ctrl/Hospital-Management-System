@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Appointment - HMS</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #101820;
+            color: #ffffff;
+        }
+
+        .page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .card {
+            width: 520px;
+            background: #182633;
+            border: 1px solid #2b3d4d;
+            border-radius: 14px;
+            padding: 35px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            color: #ffffff;
+        }
+
+        .header p {
+            margin-top: 8px;
+            color: #9aa8b5;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            color: #dce3e8;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px 13px;
+            background: #243746;
+            color: #ffffff;
+            border: 1px solid #3a4d5d;
+            border-radius: 7px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #2E86C1;
+            box-shadow: 0 0 0 2px rgba(46, 134, 193, 0.15);
+        }
+
+        input[type="date"],
+        input[type="time"] {
+            color-scheme: dark;
+        }
+
+        select option {
+            background: #243746;
+            color: #ffffff;
+        }
+
+        .submit-btn {
+            width: 100%;
+            margin-top: 8px;
+            padding: 13px;
+            border: none;
+            border-radius: 7px;
+            background: #2E86C1;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background: #21618C;
+        }
+
+        .error {
+            background: #3b2020;
+            color: #ff8f8f;
+            border: 1px solid #6b3030;
+            padding: 11px;
+            border-radius: 7px;
+            margin-bottom: 18px;
+            font-size: 14px;
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 22px;
+            color: #7f909e;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="card">
+
+        <div class="header">
+            <h1>Book Appointment</h1>
+            <p>Hospital Management System</p>
+        </div>
+
+        {% if error %}
+            <div class="error">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST">
+
+            <div class="form-group">
+                <label>Patient Name</label>
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Enter patient name"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input
+                    type="text"
+                    name="phone"
+                    placeholder="Enter phone number"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Select Doctor</label>
+
+                <select name="doctor_id" required>
+
+                    <option value="">-- Select Doctor --</option>
+
+                    {% for doctor in doctors %}
+                        <option value="{{ doctor.Doctor_ID }}">
+                            Dr. {{ doctor.Name }}
+                            {% if doctor.Specialization %}
+                                - {{ doctor.Specialization }}
+                            {% endif %}
+                        </option>
+                    {% endfor %}
+
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Appointment Date</label>
+                <input
+                    type="date"
+                    name="appointment_date"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Appointment Time</label>
+                <input
+                    type="time"
+                    name="appointment_time"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="submit-btn">
+                Book Appointment
+            </button>
+
+        </form>
+
+        <div class="footer-text">
+            Hospital Management System • Appointment Booking
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
